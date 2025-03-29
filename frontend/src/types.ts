@@ -18,7 +18,7 @@ export type Tally = {
   [K in DateStr]?: number;
 };
 
-export interface TodoData {
+export interface Todo {
   id: number;
   title: string;
   day: DayStr | "";
@@ -28,9 +28,24 @@ export interface TodoData {
   description: string;
 }
 
-export interface Todo extends TodoData {
-  date: DateStr;
-}
+export type FormData = Omit<Todo, "id" | "completed">;
+
+// export type FormDataAction =
+// | { reset: true; field: null; newValue: null }
+// | { field: "title", newValue: string}
+// | { field: "day", newValue: DayStr | ""}
+// | { field: "month", newValue: MonthStr | ""}
+// | { field: "year", newValue: YearStr | ""}
+// | { field: "description", newValue: string}
+
+export type FormDataAction =
+  | { reset: true; field: null; newValue: null }
+  | {
+      [K in keyof FormData]: {
+        field: K;
+        newValue: FormData[K];
+      };
+    }[keyof FormData];
 
 export interface Filter {
   date: DateStr | undefined;
@@ -41,9 +56,9 @@ export type GroupName = DateStr | "All Todos" | "Completed";
 
 export interface TodosHook {
   all: Todo[];
-  setAll: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setAll: (data: Todo[]) => void;
   filter: Filter;
-  setFilter: React.Dispatch<React.SetStateAction<Filter>>;
+  setFilter: (filter: Filter) => void;
   filtered: Todo[];
   activeGroupName: GroupName;
 }

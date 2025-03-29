@@ -1,19 +1,35 @@
 import "./Group.css";
 import { NavButton } from "../Nav";
-import { Todo, TodosHook } from "../../types";
+import { Todo, TodosHook, FormDataAction } from "../../types";
 import utils from "../../utils";
 
-const TodoItem = ({ title, month, year, completed }: Todo) => {
-  const date = utils.toDateStr(month, year);
-  const completedClass = completed ? " completed" : "";
+interface TodoItemProps {
+  todo: Todo;
+  openModal: () => void;
+  formDataDispatch: (action: FormDataAction) => void;
+}
+
+const TodoItem = ({ todo, openModal, formDataDispatch }: TodoItemProps) => {
+  const date = utils.toDateStr(todo.month, todo.year);
+  const completedClass = todo.completed ? " completed" : "";
+  const handleClick = (e: React.SyntheticEvent) => {
+    if (e.target === e.currentTarget) {
+      formDataDispatch({ field: "title", newValue: todo.title });
+      formDataDispatch({ field: "day", newValue: todo.day });
+      formDataDispatch({ field: "month", newValue: todo.month });
+      formDataDispatch({ field: "year", newValue: todo.year });
+      formDataDispatch({ field: "description", newValue: todo.description });
+      openModal();
+    }
+  };
 
   return (
-    <li className={"todo" + completedClass}>
+    <li className={"todo" + completedClass} onClick={handleClick}>
       <button className="checkbox" type="button">
         Complete
       </button>
       <a href="#">
-        {title} - {date}
+        {todo.title} - {date}
       </a>
       <button className="delete" type="button">
         Delete
@@ -24,9 +40,11 @@ const TodoItem = ({ title, month, year, completed }: Todo) => {
 
 interface GroupProps {
   todos: TodosHook;
+  openModal: () => void;
+  formDataDispatch: (action: FormDataAction) => void;
 }
 
-const Group = ({ todos }: GroupProps) => {
+const Group = ({ todos, openModal, formDataDispatch }: GroupProps) => {
   return (
     <main>
       <NavButton />
@@ -36,13 +54,18 @@ const Group = ({ todos }: GroupProps) => {
         <span className="badge">{todos.filtered.length}</span>
       </header>
 
-      <button id="show-create-form" type="button">
+      <button id="show-create-form" type="button" onClick={openModal}>
         Add new todo
       </button>
 
       <ul className="todo-list">
         {todos.filtered.map((todo) => (
-          <TodoItem key={todo.id} {...todo} />
+          <TodoItem
+            key={todo.id}
+            openModal={openModal}
+            formDataDispatch={formDataDispatch}
+            todo={todo}
+          />
         ))}
       </ul>
     </main>

@@ -1,5 +1,5 @@
 /* Modal */
-#form-modal {
+.modal {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
@@ -12,7 +12,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-#form-modal > form {
+.modal > form {
   display: grid;
   grid-template-columns: 90px 1fr 1fr;
   grid-template-rows: 36px 36px 1fr 36px;
@@ -30,12 +30,12 @@
   padding: 35px 40px 40px 30px;
 }
 
-#form-modal label {
+.modal label {
   margin-top: 10px;
 }
 
-#form-modal input,
-#form-modal select {
+.modal input,
+.modal select {
   font-size: 16px;
   border: 1px solid #b3b3b3;
   padding-left: 8px;
@@ -53,7 +53,7 @@
   grid-area: date-label;
 }
 
-#form-modal fieldset {
+.modal fieldset {
   border: none;
 }
 
@@ -88,7 +88,7 @@
   padding: 8px;
 }
 
-#form-modal button {
+.modal button {
   background-color: var(--highlight-color);
   color: var(--bg-color);
   font-size: 16px;
@@ -96,10 +96,10 @@
   border-radius: 5px;
 }
 
-#form-modal .save {
+.modal .save {
   grid-area: save;
 }
 
-#form-modal .mark-complete {
+.modal .mark-complete {
   grid-area: complete;
 }

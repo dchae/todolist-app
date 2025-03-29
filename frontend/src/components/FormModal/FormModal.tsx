@@ -1,9 +1,39 @@
 import "./FormModal.css";
+import Modal from "../Modal";
+import { FormData, FormDataAction } from "../../types.ts";
 
-const FormModal = () => {
+interface FormModalProps {
+  isOpen: boolean;
+  setOpen: (isOpen: boolean) => void;
+  formData: FormData;
+  dispatch: (action: FormDataAction) => void;
+}
+
+const FormModal = ({ isOpen, setOpen, formData, dispatch }: FormModalProps) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Handling form submit...");
+  };
+
+  const handleValueChange = (e: React.SyntheticEvent) => {
+    if (!("name" in e.target && "value" in e.target)) {
+      throw new Error("Invalid value change target.");
+    }
+
+    const field = e.target.name;
+    const newValue = e.target.value;
+    // TODO: Used assertion here because narrowing would be unnecessarily annoying.
+    // Consider using something like zod to parse.
+    dispatch({ field, newValue } as FormDataAction);
+  };
+
   return (
-    <dialog id="form-modal">
-      <form action="#" method="post" data-id="">
+    <Modal
+      isOpen={isOpen}
+      setOpen={setOpen}
+      onClose={() => dispatch({ reset: true })}
+    >
+      <form onSubmit={handleSubmit}>
         <label id="title-label" htmlFor="title">
           Title
         </label>
@@ -13,7 +43,8 @@ const FormModal = () => {
           name="title"
           id="title"
           placeholder="Title"
-          value=""
+          value={formData.title}
+          onChange={handleValueChange}
           minLength={3}
           required
         />
@@ -22,49 +53,32 @@ const FormModal = () => {
           Due Date
         </label>
         <fieldset id="date">
-          <select id="date-day" name="day">
-            <option value="" selected>
-              Day
-            </option>
-            <option value="01">1</option>
-            <option value="02">2</option>
-            <option value="03">3</option>
-            <option value="04">4</option>
-            <option value="05">5</option>
-            <option value="06">6</option>
-            <option value="07">7</option>
-            <option value="08">8</option>
-            <option value="09">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-            <option value="15">15</option>
-            <option value="16">16</option>
-            <option value="17">17</option>
-            <option value="18">18</option>
-            <option value="19">19</option>
-            <option value="20">20</option>
-            <option value="21">21</option>
-            <option value="22">22</option>
-            <option value="23">23</option>
-            <option value="24">24</option>
-            <option value="25">25</option>
-            <option value="26">26</option>
-            <option value="27">27</option>
-            <option value="28">28</option>
-            <option value="29">29</option>
-            <option value="30">30</option>
-            <option value="31">31</option>
+          <select
+            id="date-day"
+            name="day"
+            value={formData.day}
+            onChange={handleValueChange}
+          >
+            <option defaultValue="">Day</option>
+            {[...Array(31).keys()].map((i) => {
+              const day = String(i + 1);
+              const padded = day.padStart(2, "0");
+              return (
+                <option key={day} value={padded}>
+                  {day}
+                </option>
+              );
+            })}
           </select>
 
           <span className="date-separator">/</span>
 
-          <select name="month">
-            <option value="" selected>
-              Month
-            </option>
+          <select
+            name="month"
+            value={formData.month}
+            onChange={handleValueChange}
+          >
+            <option defaultValue="">Month</option>
             <option value="01">Jan</option>
             <option value="02">Feb</option>
             <option value="03">Mar</option>
@@ -81,15 +95,20 @@ const FormModal = () => {
 
           <span className="date-separator">/</span>
 
-          <select name="year">
-            <option value="" selected>
-              Year
-            </option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-            <option value="2029">2029</option>
+          <select
+            name="year"
+            value={formData.year}
+            onChange={handleValueChange}
+          >
+            <option defaultValue="">Year</option>
+            {[...Array(25).keys()].map((i) => {
+              const year = String(new Date().getFullYear() + i);
+              return (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              );
+            })}
           </select>
         </fieldset>
 
@@ -101,6 +120,8 @@ const FormModal = () => {
           name="description"
           id="description"
           placeholder="Description"
+          value={formData.description}
+          onChange={handleValueChange}
         ></textarea>
 
         <button type="submit" className="save">
@@ -110,7 +131,7 @@ const FormModal = () => {
           Mark As Complete
         </button>
       </form>
-    </dialog>
+    </Modal>
   );
 };
 
