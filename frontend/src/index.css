@@ -1,0 +1,17 @@
+/* Default styling */
+:root {
+  --highlight-color: #148fd5;
+  --bg-color: #ffffff;
+  --secondary-bg-color: #464f77;
+  --text-color: #060606;
+  --dim-text-color: #b2b5c3;
+
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}

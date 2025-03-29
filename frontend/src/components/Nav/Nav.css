@@ -1,0 +1,87 @@
+/* Sidebar */
+.hidden-checkbox {
+  display: none;
+}
+
+nav {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 230px;
+  height: 100%;
+  background-color: var(--secondary-bg-color);
+  font-weight: 300;
+  transition: all 0.5s;
+  overflow: hidden;
+  color: var(--dim-text-color);
+}
+
+#sidebar-toggle:checked + #wrapper nav {
+  width: 230px;
+}
+
+/* keep toggle label visible when toggle is checked */
+#sidebar-toggle:checked ~ #wrapper label[for="sidebar-toggle"] {
+  visibility: visible;
+  opacity: 1;
+}
+
+nav section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 45px;
+}
+
+.group {
+  display: flex;
+  gap: 7px;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+#all-group,
+#all-completed-group {
+  padding: 15px 20px 15px 55px;
+  background: url("/src/assets/all-todos.png") no-repeat left 15px center;
+  font-size: 18px;
+  font-weight: 300;
+}
+
+#all-completed-group {
+  background-image: url("/src/assets/done.png");
+}
+
+.group a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.current,
+#all-group.current,
+#all-completed-group.current {
+  background-color: #38405e;
+  color: var(--bg-color);
+}
+
+.current .badge,
+.current-group-header .badge {
+  background-color: var(--highlight-color);
+  color: var(--bg-color);
+}
+
+.completed-groups li a {
+  text-decoration: line-through;
+}
+
+/* Media queries for auto-hiding nav sidebar */
+@media screen and (width <= 700px) {
+  nav {
+    width: 0;
+  }
+
+  label[for="sidebar-toggle"] {
+    visibility: visible;
+    opacity: 1;
+  }
+}

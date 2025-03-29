@@ -1,0 +1,89 @@
+main {
+  flex: 1;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  margin: 30px;
+}
+
+.current-group-header {
+  display: flex;
+  align-items: center;
+  margin: 0 0 30px 10px;
+}
+
+.current-group-header h1 {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+#show-create-form {
+  color: var(--highlight-color);
+  font-size: inherit;
+  background: url("src/assets/plus.png") no-repeat left center;
+  display: block;
+  border: none;
+  margin: 20px 0 15px 13px;
+  padding-left: 27px;
+  cursor: pointer;
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  height: 48px;
+  min-width: 150px;
+  margin: 0;
+  padding: 0;
+  padding-left: 12px;
+  border-top: 1px solid #e7e7e7;
+}
+
+.todo:hover {
+  background-color: rgba(0, 120, 255, 0.1);
+}
+
+.todo a {
+  font-weight: 400;
+  text-decoration: inherit;
+  color: inherit;
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.completed a {
+  text-decoration: line-through;
+  color: #b3b3b3;
+}
+
+.todo a:hover {
+  color: var(--highlight-color);
+}
+
+.todo button {
+  flex-shrink: 0;
+  height: 14px;
+  width: 14px;
+  background: transparent;
+  color: transparent;
+}
+
+.todo .checkbox {
+  background-image: url("/src/assets/unticked-box.png");
+}
+
+.todo.completed .checkbox {
+  background-image: url("/src/assets/ticked-box.png");
+}
+
+.todo .delete {
+  background: url("/src/assets/trash.png") no-repeat center;
+  height: 100%;
+  width: 50px;
+}
+
+.todo .delete:hover {
+  background-color: rgba(255, 0, 0, 0.5);
+}
