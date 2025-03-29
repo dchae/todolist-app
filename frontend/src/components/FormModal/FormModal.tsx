@@ -1,18 +1,26 @@
 import "./FormModal.css";
 import Modal from "../Modal";
-import { FormData, FormDataAction } from "../../types.ts";
+import { FormData, FormDataAction, TodosHook } from "../../types.ts";
 
 interface FormModalProps {
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
   formData: FormData;
   dispatch: (action: FormDataAction) => void;
+  todos: TodosHook;
 }
 
-const FormModal = ({ isOpen, setOpen, formData, dispatch }: FormModalProps) => {
+const FormModal = ({
+  todos,
+  isOpen,
+  setOpen,
+  formData,
+  dispatch,
+}: FormModalProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Handling form submit...");
+    todos.create(formData);
+    setOpen(false);
   };
 
   const handleValueChange = (e: React.SyntheticEvent) => {

@@ -31,7 +31,7 @@ export interface Todo {
 export type FormData = Omit<Todo, "id" | "completed">;
 
 // export type FormDataAction =
-// | { reset: true; field: null; newValue: null }
+// | { reset: true; field?: null; newValue?: null }
 // | { field: "title", newValue: string}
 // | { field: "day", newValue: DayStr | ""}
 // | { field: "month", newValue: MonthStr | ""}
@@ -39,7 +39,7 @@ export type FormData = Omit<Todo, "id" | "completed">;
 // | { field: "description", newValue: string}
 
 export type FormDataAction =
-  | { reset: true; field: null; newValue: null }
+  | { reset: true; field?: null; newValue?: null }
   | {
       [K in keyof FormData]: {
         field: K;
@@ -61,4 +61,6 @@ export interface TodosHook {
   setFilter: (filter: Filter) => void;
   filtered: Todo[];
   activeGroupName: GroupName;
+  deleteTodo: (id: number) => void;
+  create: (data: FormData) => void;
 }

@@ -1,4 +1,5 @@
 import { useState, useReducer, useEffect, useMemo } from "react";
+import axios from "axios";
 import "./App.css";
 import TodoService from "./services/TodoListAPI.ts";
 import Nav from "./components/Nav";
@@ -38,7 +39,50 @@ const useTodos = (): TodosHook => {
     return name as GroupName;
   }, [filter]);
 
-  return { all, setAll, filter, setFilter, filtered, activeGroupName };
+  const deleteTodo = async (id: number) => {
+    try {
+      await TodoService.deleteTodo(id);
+      setAll(all.filter((todo) => todo.id !== id));
+    } catch (e: unknown) {
+      let msg = "An unknown error occurred.";
+      if (axios.isAxiosError(e)) {
+        if (e.response?.data) {
+          msg = e.response.data;
+        } else if (e.status === 404) {
+          msg = "404 not found";
+        }
+      } else if (e instanceof Error) {
+        msg = e.message;
+      }
+      alert(msg);
+    }
+  };
+
+  const create = async (data: FormData) => {
+    try {
+      const created = await TodoService.create(data);
+      setAll(all.concat(created));
+    } catch (e: unknown) {
+      let msg = "An unknown error occurred.";
+      if (axios.isAxiosError(e) && e.response?.data) {
+        msg = e.response.data;
+      } else if (e instanceof Error) {
+        msg = e.message;
+      }
+      alert(msg);
+    }
+  };
+
+  return {
+    all,
+    setAll,
+    filter,
+    setFilter,
+    filtered,
+    activeGroupName,
+    deleteTodo,
+    create,
+  };
 };
 
 const emptyFormData: FormData = {
@@ -103,6 +147,7 @@ const App = () => {
       </div>
 
       <FormModal
+        todos={todos}
         isOpen={modalOpen}
         setOpen={setModalOpen}
         formData={formData}

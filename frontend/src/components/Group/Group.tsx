@@ -5,11 +5,17 @@ import utils from "../../utils";
 
 interface TodoItemProps {
   todo: Todo;
+  todos: TodosHook;
   openModal: () => void;
   formDataDispatch: (action: FormDataAction) => void;
 }
 
-const TodoItem = ({ todo, openModal, formDataDispatch }: TodoItemProps) => {
+const TodoItem = ({
+  todos,
+  todo,
+  openModal,
+  formDataDispatch,
+}: TodoItemProps) => {
   const date = utils.toDateStr(todo.month, todo.year);
   const completedClass = todo.completed ? " completed" : "";
   const handleClick = (e: React.SyntheticEvent) => {
@@ -23,6 +29,11 @@ const TodoItem = ({ todo, openModal, formDataDispatch }: TodoItemProps) => {
     }
   };
 
+  const handleDelete = () => {
+    const confirm = window.confirm("Are you sure?");
+    if (confirm) todos.deleteTodo(todo.id);
+  };
+
   return (
     <li className={"todo" + completedClass} onClick={handleClick}>
       <button className="checkbox" type="button">
@@ -31,7 +42,7 @@ const TodoItem = ({ todo, openModal, formDataDispatch }: TodoItemProps) => {
       <a href="#">
         {todo.title} - {date}
       </a>
-      <button className="delete" type="button">
+      <button className="delete" type="button" onClick={handleDelete}>
         Delete
       </button>
     </li>
@@ -64,6 +75,7 @@ const Group = ({ todos, openModal, formDataDispatch }: GroupProps) => {
             key={todo.id}
             openModal={openModal}
             formDataDispatch={formDataDispatch}
+            todos={todos}
             todo={todo}
           />
         ))}
