@@ -18,15 +18,14 @@ const TodoItem = ({
 }: TodoItemProps) => {
   const date = utils.toDateStr(todo.month, todo.year);
   const completedClass = todo.completed ? " completed" : "";
-  const handleClick = (e: React.SyntheticEvent) => {
-    if (e.target === e.currentTarget) {
-      formDataDispatch({ field: "title", newValue: todo.title });
-      formDataDispatch({ field: "day", newValue: todo.day });
-      formDataDispatch({ field: "month", newValue: todo.month });
-      formDataDispatch({ field: "year", newValue: todo.year });
-      formDataDispatch({ field: "description", newValue: todo.description });
-      openModal();
-    }
+  const handleOpenModal = () => {
+    formDataDispatch({ field: "id", value: todo.id });
+    formDataDispatch({ field: "title", value: todo.title });
+    formDataDispatch({ field: "day", value: todo.day });
+    formDataDispatch({ field: "month", value: todo.month });
+    formDataDispatch({ field: "year", value: todo.year });
+    formDataDispatch({ field: "description", value: todo.description });
+    openModal();
   };
 
   const handleDelete = () => {
@@ -34,12 +33,19 @@ const TodoItem = ({
     if (confirm) todos.deleteTodo(todo.id);
   };
 
+  const handleToggleComplete = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (e.target === e.currentTarget) {
+      todos.update({ id: todo.id, completed: !todo.completed });
+    }
+  };
+
   return (
-    <li className={"todo" + completedClass} onClick={handleClick}>
-      <button className="checkbox" type="button">
+    <li className={"todo" + completedClass} onClick={handleToggleComplete}>
+      <button className="checkbox" type="button" onClick={handleToggleComplete}>
         Complete
       </button>
-      <a href="#">
+      <a href="#" onClick={handleOpenModal}>
         {todo.title} - {date}
       </a>
       <button className="delete" type="button" onClick={handleDelete}>

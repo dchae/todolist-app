@@ -28,24 +28,34 @@ export interface Todo {
   description: string;
 }
 
-export type FormData = Omit<Todo, "id" | "completed">;
+export type TodoValues = Partial<Todo>;
 
-// export type FormDataAction =
-// | { reset: true; field?: null; newValue?: null }
-// | { field: "title", newValue: string}
-// | { field: "day", newValue: DayStr | ""}
-// | { field: "month", newValue: MonthStr | ""}
-// | { field: "year", newValue: YearStr | ""}
-// | { field: "description", newValue: string}
+export interface FormData {
+  id?: number;
+  title: string;
+  day: DayStr | "";
+  month: MonthStr | "";
+  year: YearStr | "";
+  description: string;
+}
 
 export type FormDataAction =
-  | { reset: true; field?: null; newValue?: null }
-  | {
-      [K in keyof FormData]: {
-        field: K;
-        newValue: FormData[K];
-      };
-    }[keyof FormData];
+  | { reset: true; field?: null; value?: null }
+  | { field: "id"; value: number }
+  | { field: "title"; value: string }
+  | { field: "day"; value: DayStr | "" }
+  | { field: "month"; value: MonthStr | "" }
+  | { field: "year"; value: YearStr | "" }
+  | { field: "description"; value: string };
+
+// export type FormDataAction =
+//   | { reset: true; field?: null; value?: null }
+//   | {
+//       [K in keyof FormData]: {
+//         field: K;
+//         value: FormData[K];
+//       };
+//     }[keyof FormData];
 
 export interface Filter {
   date: DateStr | undefined;
@@ -63,4 +73,5 @@ export interface TodosHook {
   activeGroupName: GroupName;
   deleteTodo: (id: number) => void;
   create: (data: FormData) => void;
+  update: (data: TodoValues) => void;
 }

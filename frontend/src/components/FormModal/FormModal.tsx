@@ -18,8 +18,13 @@ const FormModal = ({
   dispatch,
 }: FormModalProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    console.log(formData);
     e.preventDefault();
-    todos.create(formData);
+    if ("id" in formData && typeof formData.id === "number") {
+      todos.update(formData);
+    } else {
+      todos.create(formData);
+    }
     setOpen(false);
   };
 
@@ -29,10 +34,20 @@ const FormModal = ({
     }
 
     const field = e.target.name;
-    const newValue = e.target.value;
+    const value = e.target.value;
     // TODO: Used assertion here because narrowing would be unnecessarily annoying.
     // Consider using something like zod to parse.
-    dispatch({ field, newValue } as FormDataAction);
+    dispatch({ field, value } as FormDataAction);
+  };
+
+  const handleMarkComplete = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if ("id" in formData) {
+      todos.update({ id: formData.id, completed: true });
+      setOpen(false);
+    } else {
+      alert("Todo has not been created yet");
+    }
   };
 
   return (
@@ -67,7 +82,7 @@ const FormModal = ({
             value={formData.day}
             onChange={handleValueChange}
           >
-            <option defaultValue="">Day</option>
+            <option value="">Day</option>
             {[...Array(31).keys()].map((i) => {
               const day = String(i + 1);
               const padded = day.padStart(2, "0");
@@ -86,7 +101,7 @@ const FormModal = ({
             value={formData.month}
             onChange={handleValueChange}
           >
-            <option defaultValue="">Month</option>
+            <option value="">Month</option>
             <option value="01">Jan</option>
             <option value="02">Feb</option>
             <option value="03">Mar</option>
@@ -108,7 +123,7 @@ const FormModal = ({
             value={formData.year}
             onChange={handleValueChange}
           >
-            <option defaultValue="">Year</option>
+            <option value="">Year</option>
             {[...Array(25).keys()].map((i) => {
               const year = String(new Date().getFullYear() + i);
               return (
@@ -135,7 +150,11 @@ const FormModal = ({
         <button type="submit" className="save">
           Save
         </button>
-        <button type="button" className="mark-complete">
+        <button
+          type="button"
+          className="mark-complete"
+          onClick={handleMarkComplete}
+        >
           Mark As Complete
         </button>
       </form>

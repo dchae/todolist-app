@@ -4,10 +4,18 @@ const fs = require("fs");
 const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database(
-  path.join(__dirname, "../db/development.sqlite3")
+  path.join(__dirname, "../db/development.sqlite3"),
 );
 
-const VALID_TODO_PROPS = ["id", "title", "day", "month", "year", "description", "completed"];
+const VALID_TODO_PROPS = [
+  "id",
+  "title",
+  "day",
+  "month",
+  "year",
+  "description",
+  "completed",
+];
 
 function extractTodoObject(requestBody) {
   const todo = {};
@@ -25,19 +33,20 @@ function convertToTodoObject(requestBody) {
   console.log(requestBody);
 }
 
-function isValidTodo(todo) {  
+function isValidTodo(todo) {
   return (
     todo.title.length >= 3 &&
     (todo.day.length === 2 || todo.day === "") &&
     (todo.month.length === 2 || todo.month === "") &&
     (todo.year.length === 4 || todo.year === "") &&
-    Object.keys(todo).every(prop => VALID_TODO_PROPS.includes(prop))
+    Object.keys(todo).every((prop) => VALID_TODO_PROPS.includes(prop))
   );
 }
 
 function createUpdateQuery(todoObj, id) {
   const attributesForUpdate = Object.keys(todoObj).filter(function (key) {
-    return todoObj[key] !== "" && key !== "completed" && key !== "id";
+    return key !== "completed" && key !== "id";
+    // return todoObj[key] !== "" && key !== "completed" && key !== "id";
   });
 
   const attributesForUpdateQuery = attributesForUpdate.map(function (key) {
@@ -45,7 +54,7 @@ function createUpdateQuery(todoObj, id) {
   });
 
   return `UPDATE TODOS SET ${attributesForUpdateQuery.join(
-    ", "
+    ", ",
   )} WHERE id = ${id};`;
 }
 
@@ -125,7 +134,7 @@ router.get("/todos/:id", function (req, res, next) {
       } else {
         res.status(404).send("The todo could not be found.");
       }
-    }
+    },
   );
 });
 
@@ -183,9 +192,9 @@ router.post("/todos", function (req, res, next) {
           function (err, row) {
             mutateCompletedToBoolean(row);
             res.status(201).json(row);
-          }
+          },
         );
-      }
+      },
     );
   } else {
     res.status(400).send("Todo cannot be saved.");
@@ -208,7 +217,7 @@ router.post("/todos", function (req, res, next) {
  *     {'completed': true, 'description': 'done'}
  *
  * @apiSuccess (200) {json} todo Returns the updated todo.
- * 
+ *
  *  @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {'id': 1, 'title': 'todo 1', 'day': '11', 'month': '11', 'year': '2017', 'completed': true, 'description': 'done'}
@@ -230,7 +239,7 @@ router.put("/todos/:id", function (req, res, next) {
     "SELECT * FROM TODOS WHERE id = $id",
     { $id: id },
     function (err, row) {
-      if (row) {        
+      if (row) {
         const todoObj = Object.assign(row, req.body);
 
         if (isValidTodo(todoObj)) {
@@ -247,9 +256,9 @@ router.put("/todos/:id", function (req, res, next) {
                     function (err, row) {
                       mutateCompletedToBoolean(row);
                       res.status(200).json(row);
-                    }
+                    },
                   );
-                }
+                },
               );
             } else {
               db.get(
@@ -258,7 +267,7 @@ router.put("/todos/:id", function (req, res, next) {
                 function (err, row) {
                   mutateCompletedToBoolean(row);
                   res.status(200).json(row);
-                }
+                },
               );
             }
           });
@@ -268,7 +277,7 @@ router.put("/todos/:id", function (req, res, next) {
       } else {
         res.status(404).send("The todo could not be found.");
       }
-    }
+    },
   );
 });
 
@@ -297,7 +306,7 @@ router.delete("/todos/:id", function (req, res, next) {
       } else {
         res.status(404).send("The todo could not be found.");
       }
-    }
+    },
   );
 });
 

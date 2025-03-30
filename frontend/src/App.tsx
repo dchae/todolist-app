@@ -12,6 +12,7 @@ import {
   TodosHook,
   FormData,
   FormDataAction,
+  TodoValues,
 } from "./types";
 import utils from "./utils";
 
@@ -21,12 +22,19 @@ const useTodos = (): TodosHook => {
   const [filter, setFilter] = useState(defaultFilter);
 
   const filtered = useMemo(() => {
-    return all.filter((todo) => {
+    const matches = all.filter((todo) => {
       const date = utils.toDateStr(todo.month, todo.year);
       if (filter.date !== undefined && filter.date !== date) return false;
       if (filter.completedOnly) return todo.completed;
       return true;
     });
+
+    const uncompleted: Todo[] = [];
+    const completed: Todo[] = [];
+    matches.forEach((todo) => {
+      (todo.completed ? completed : uncompleted).push(todo);
+    });
+    return uncompleted.concat(completed);
   }, [all, filter]);
 
   const activeGroupName = useMemo(() => {
@@ -39,18 +47,14 @@ const useTodos = (): TodosHook => {
     return name as GroupName;
   }, [filter]);
 
-  const deleteTodo = async (id: number) => {
+  const create = async (data: FormData) => {
     try {
-      await TodoService.deleteTodo(id);
-      setAll(all.filter((todo) => todo.id !== id));
+      const created = await TodoService.create(data);
+      setAll(all.concat(created));
     } catch (e: unknown) {
       let msg = "An unknown error occurred.";
-      if (axios.isAxiosError(e)) {
-        if (e.response?.data) {
-          msg = e.response.data;
-        } else if (e.status === 404) {
-          msg = "404 not found";
-        }
+      if (axios.isAxiosError(e) && e.response?.data) {
+        msg = e.response.data;
       } else if (e instanceof Error) {
         msg = e.message;
       }
@@ -58,10 +62,26 @@ const useTodos = (): TodosHook => {
     }
   };
 
-  const create = async (data: FormData) => {
+  const deleteTodo = async (id: number) => {
     try {
-      const created = await TodoService.create(data);
-      setAll(all.concat(created));
+      await TodoService.deleteTodo(id);
+      setAll(all.filter((todo) => todo.id !== id));
+    } catch (e: unknown) {
+      let msg = "An unknown error occurred.";
+      if (axios.isAxiosError(e) && e.response?.data) {
+        msg = e.response.data;
+      } else if (e instanceof Error) {
+        msg = e.message;
+      }
+      alert(msg);
+    }
+  };
+
+  const update = async ({ id, ...newValues }: TodoValues) => {
+    try {
+      if (typeof id !== "number") throw new Error("invalid id");
+      const updated = await TodoService.update(id, newValues);
+      setAll(all.map((todo) => (todo.id === id ? updated : todo)));
     } catch (e: unknown) {
       let msg = "An unknown error occurred.";
       if (axios.isAxiosError(e) && e.response?.data) {
@@ -82,6 +102,7 @@ const useTodos = (): TodosHook => {
     activeGroupName,
     deleteTodo,
     create,
+    update,
   };
 };
 
@@ -98,20 +119,23 @@ const formDataReducer = (state: FormData, action: FormDataAction) => {
   if ("reset" in action && action.reset) return emptyFormData;
 
   switch (action.field) {
+    case "id":
+      newState.id = action.value;
+      break;
     case "title":
-      newState.title = action.newValue;
+      newState.title = action.value;
       break;
     case "day":
-      newState.day = action.newValue;
+      newState.day = action.value;
       break;
     case "month":
-      newState.month = action.newValue;
+      newState.month = action.value;
       break;
     case "year":
-      newState.year = action.newValue;
+      newState.year = action.value;
       break;
     case "description":
-      newState.description = action.newValue;
+      newState.description = action.value;
       break;
     default:
       throw new Error(
