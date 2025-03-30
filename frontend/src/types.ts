@@ -58,11 +58,9 @@ export type FormDataAction =
 //     }[keyof FormData];
 
 export interface Filter {
-  date: DateStr | undefined;
-  completedOnly: boolean;
+  date?: DateStr;
+  completedOnly?: true;
 }
-
-export type GroupName = DateStr | "All Todos" | "Completed";
 
 export interface TodosHook {
   all: Todo[];
@@ -74,4 +72,14 @@ export interface TodosHook {
   deleteTodo: (id: number) => void;
   create: (data: FormData) => void;
   update: (data: TodoValues) => void;
+  allCompleted: () => Todo[];
+  datesTally: (completedOnly?: boolean) => Tally;
+}
+
+export type GroupName = DateStr | "All Todos" | "Completed";
+
+export interface Group {
+  name: GroupName;
+  count: number;
+  current?: true;
 }

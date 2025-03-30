@@ -24,6 +24,7 @@ const FormModal = ({
       todos.update(formData);
     } else {
       todos.create(formData);
+      todos.setFilter({});
     }
     setOpen(false);
   };

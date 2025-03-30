@@ -13,13 +13,13 @@ import {
   FormData,
   FormDataAction,
   TodoValues,
+  Tally,
 } from "./types";
 import utils from "./utils";
 
 const useTodos = (): TodosHook => {
   const [all, setAll] = useState<Todo[]>([]);
-  const defaultFilter: Filter = { date: undefined, completedOnly: false };
-  const [filter, setFilter] = useState(defaultFilter);
+  const [filter, setFilter] = useState<Filter>({});
 
   const filtered = useMemo(() => {
     const matches = all.filter((todo) => {
@@ -31,6 +31,7 @@ const useTodos = (): TodosHook => {
 
     const uncompleted: Todo[] = [];
     const completed: Todo[] = [];
+    matches.sort((a, b) => b.id - a.id);
     matches.forEach((todo) => {
       (todo.completed ? completed : uncompleted).push(todo);
     });
@@ -93,6 +94,18 @@ const useTodos = (): TodosHook => {
     }
   };
 
+  const allCompleted = () => all.filter(({ completed }) => completed);
+
+  const datesTally = (completedOnly = false) => {
+    const tally: Tally = {};
+    const todos = completedOnly ? allCompleted() : all;
+    for (const todo of todos) {
+      const date = utils.toDateStr(todo.month, todo.year);
+      tally[date] = (tally[date] ?? 0) + 1;
+    }
+    return tally;
+  };
+
   return {
     all,
     setAll,
@@ -103,6 +116,8 @@ const useTodos = (): TodosHook => {
     deleteTodo,
     create,
     update,
+    allCompleted,
+    datesTally,
   };
 };
 
@@ -162,7 +177,7 @@ const App = () => {
   return (
     <>
       <div id="wrapper">
-        <Nav />
+        <Nav todos={todos} />
         <Group
           todos={todos}
           openModal={() => setModalOpen(true)}
