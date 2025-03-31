@@ -1,0 +1,30 @@
+.todo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  height: 48px;
+  min-width: 150px;
+  margin: 0;
+  padding: 0;
+  padding-left: 12px;
+  border-top: 1px solid #e7e7e7;
+}
+
+.todo:hover {
+  background-color: rgba(0, 120, 255, 0.1);
+}
+
+.todo a {
+  font-weight: 400;
+  text-decoration: inherit;
+  color: inherit;
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.completed a {
+  text-decoration: line-through;
+  color: #b3b3b3;
+}

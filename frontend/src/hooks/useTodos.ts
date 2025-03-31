@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import axios from "axios";
 import TodoService from "../services/TodoListAPI.ts";
 import utils from "../utils";
 import {
@@ -48,13 +47,7 @@ const useTodos = (): TodosHook => {
       const created = await TodoService.create(data);
       setAll(all.concat(created));
     } catch (e: unknown) {
-      let msg = "An unknown error occurred.";
-      if (axios.isAxiosError(e) && e.response?.data) {
-        msg = e.response.data;
-      } else if (e instanceof Error) {
-        msg = e.message;
-      }
-      alert(msg);
+      utils.handleAPIError(e);
     }
   };
 
@@ -63,13 +56,7 @@ const useTodos = (): TodosHook => {
       await TodoService.deleteTodo(id);
       setAll(all.filter((todo) => todo.id !== id));
     } catch (e: unknown) {
-      let msg = "An unknown error occurred.";
-      if (axios.isAxiosError(e) && e.response?.data) {
-        msg = e.response.data;
-      } else if (e instanceof Error) {
-        msg = e.message;
-      }
-      alert(msg);
+      utils.handleAPIError(e);
     }
   };
 
@@ -79,13 +66,7 @@ const useTodos = (): TodosHook => {
       const updated = await TodoService.update(id, newValues);
       setAll(all.map((todo) => (todo.id === id ? updated : todo)));
     } catch (e: unknown) {
-      let msg = "An unknown error occurred.";
-      if (axios.isAxiosError(e) && e.response?.data) {
-        msg = e.response.data;
-      } else if (e instanceof Error) {
-        msg = e.message;
-      }
-      alert(msg);
+      utils.handleAPIError(e);
     }
   };
 

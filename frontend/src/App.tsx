@@ -54,7 +54,6 @@ const App = () => {
     TodoService.getAll().then((data) => setAll(data));
   }, [setAll]);
   const [modalOpen, setModalOpen] = useState(false);
-
   const [formData, formDataDispatch] = useReducer(
     formDataReducer,
     emptyFormData,
