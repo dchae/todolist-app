@@ -3,11 +3,7 @@ import { TodosHook, DateStr, Filter } from "../../types.ts";
 
 // TODO: fix nav button
 export const NavButton = () => {
-  return (
-    <>
-      <label htmlFor="sidebar-toggle">Menu</label>
-    </>
-  );
+  return <label htmlFor="sidebar-toggle">Menu</label>;
 };
 
 interface NavProps {

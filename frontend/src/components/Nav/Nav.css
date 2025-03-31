@@ -15,15 +15,15 @@ nav {
   color: var(--dim-text-color);
 }
 
-#sidebar-toggle:checked + #wrapper nav {
+#sidebar-toggle:checked + nav {
   width: 230px;
 }
 
 /* keep toggle label visible when toggle is checked */
-#sidebar-toggle:checked ~ #wrapper label[for="sidebar-toggle"] {
-  visibility: visible;
-  opacity: 1;
-}
+/* #sidebar-toggle:checked ~ main label[for="sidebar-toggle"] { */
+/*   visibility: visible; */
+/*   opacity: 1; */
+/* } */
 
 nav section {
   display: flex;
