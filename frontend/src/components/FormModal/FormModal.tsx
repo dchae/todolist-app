@@ -18,7 +18,6 @@ const FormModal = ({
   dispatch,
 }: FormModalProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(formData);
     e.preventDefault();
     if ("id" in formData && typeof formData.id === "number") {
       todos.update(formData);

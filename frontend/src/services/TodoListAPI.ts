@@ -16,7 +16,6 @@ const deleteTodo = async (id: number) => {
 };
 
 const update = async (id: number, values: TodoValues) => {
-  console.log(id, values);
   const response = await axios.put(`/api/todos/${id}`, values);
   return response.data;
 };
