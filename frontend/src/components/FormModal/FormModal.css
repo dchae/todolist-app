@@ -69,7 +69,7 @@
   flex-grow: 1;
   appearance: none;
   -webkit-appearance: none;
-  background: url("./assets/select.png") no-repeat right 4.5px center;
+  background: url("/src/assets/select.png") no-repeat right 4.5px center;
   background-size: 10px 15px;
   border-radius: 0;
 }

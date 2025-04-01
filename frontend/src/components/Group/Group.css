@@ -19,7 +19,7 @@ main {
 #show-create-form {
   color: var(--highlight-color);
   font-size: inherit;
-  background: url("src/assets/plus.png") no-repeat left center;
+  background: url("/src/assets/plus.png") no-repeat left center;
   display: block;
   border: none;
   margin: 20px 0 15px 13px;
