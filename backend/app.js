@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("dist"));
+app.use("/doc", express.static("public/doc"));
 app.use("/api", apiRouter);
 
 module.exports = app;

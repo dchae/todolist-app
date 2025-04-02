@@ -28,52 +28,20 @@ export interface Todo {
   description: string;
 }
 
-export type TodoValues = Partial<Todo>;
+export type UpdateTodoData = Partial<Todo>;
 
-export interface FormData {
+export interface NewTodoData {
   id?: number;
   title: string;
-  day: DayStr | "";
-  month: MonthStr | "";
-  year: YearStr | "";
-  description: string;
+  day?: DayStr | "";
+  month?: MonthStr | "";
+  year?: YearStr | "";
+  description?: string;
 }
-
-export type FormDataAction =
-  | { reset: true; field?: null; value?: null }
-  | { field: "id"; value: number }
-  | { field: "title"; value: string }
-  | { field: "day"; value: DayStr | "" }
-  | { field: "month"; value: MonthStr | "" }
-  | { field: "year"; value: YearStr | "" }
-  | { field: "description"; value: string };
-
-// export type FormDataAction =
-//   | { reset: true; field?: null; value?: null }
-//   | {
-//       [K in keyof FormData]: {
-//         field: K;
-//         value: FormData[K];
-//       };
-//     }[keyof FormData];
 
 export interface Filter {
   date?: DateStr;
   completedOnly?: true;
-}
-
-export interface TodosHook {
-  all: Todo[];
-  setAll: (data: Todo[]) => void;
-  filter: Filter;
-  setFilter: (filter: Filter) => void;
-  filtered: Todo[];
-  activeGroupName: GroupName;
-  deleteTodo: (id: number) => void;
-  create: (data: FormData) => void;
-  update: (data: TodoValues) => void;
-  allCompleted: () => Todo[];
-  datesTally: (completedOnly?: boolean) => Tally;
 }
 
 export type GroupName = DateStr | "All Todos" | "Completed";

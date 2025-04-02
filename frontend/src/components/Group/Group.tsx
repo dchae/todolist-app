@@ -1,36 +1,56 @@
 import "./Group.css";
 import { NavButton } from "../Nav";
 import TodoItem from "../TodoItem";
-import { TodosHook, FormDataAction } from "../../types";
+import { Todo, UpdateTodoData, Filter } from "../../types";
+import utils from "../../utils";
 
 interface GroupProps {
-  todos: TodosHook;
+  todos: Todo[];
+  filter: Filter;
   openModal: () => void;
-  formDataDispatch: (action: FormDataAction) => void;
+  deleteTodo: (id: number) => void;
+  updateTodo: (values: UpdateTodoData) => void;
+  setCurTodo: (todo: Todo | null) => void;
 }
 
-const Group = ({ todos, openModal, formDataDispatch }: GroupProps) => {
+const Group = ({
+  todos,
+  filter,
+  openModal,
+  deleteTodo,
+  updateTodo,
+  setCurTodo,
+}: GroupProps) => {
+  const filteredTodos = utils.getFiltered(todos, filter);
   return (
     <main>
       <NavButton />
 
       <header className="current-group-header">
-        <h1>{todos.activeGroupName}</h1>
-        <span className="badge">{todos.filtered.length}</span>
+        <h1>{utils.activeGroupName(filter)}</h1>
+        <span className="badge">{filteredTodos.length}</span>
       </header>
 
-      <button id="show-create-form" type="button" onClick={openModal}>
+      <button
+        id="show-create-form"
+        type="button"
+        onClick={() => {
+          setCurTodo(null);
+          openModal();
+        }}
+      >
         Add new todo
       </button>
 
       <ul className="todo-list">
-        {todos.filtered.map((todo) => (
+        {filteredTodos.map((todo) => (
           <TodoItem
             key={todo.id}
             openModal={openModal}
-            formDataDispatch={formDataDispatch}
-            todos={todos}
             todo={todo}
+            deleteTodo={deleteTodo}
+            updateTodo={updateTodo}
+            setCurTodo={setCurTodo}
           />
         ))}
       </ul>

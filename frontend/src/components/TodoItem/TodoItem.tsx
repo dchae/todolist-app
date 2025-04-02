@@ -1,41 +1,39 @@
 import "./TodoItem.css";
-import { Todo, TodosHook, FormDataAction } from "../../types";
+import { Todo, UpdateTodoData } from "../../types";
 import utils from "../../utils";
 
 interface TodoItemProps {
   todo: Todo;
-  todos: TodosHook;
   openModal: () => void;
-  formDataDispatch: (action: FormDataAction) => void;
+  deleteTodo: (id: number) => void;
+  updateTodo: (values: UpdateTodoData) => void;
+  setCurTodo: (todo: Todo | null) => void;
 }
 
 const TodoItem = ({
-  todos,
   todo,
   openModal,
-  formDataDispatch,
+  deleteTodo,
+  updateTodo,
+  setCurTodo,
 }: TodoItemProps) => {
   const date = utils.toDateStr(todo.month, todo.year);
   const completedClass = todo.completed ? " completed" : "";
+
   const handleOpenModal = () => {
-    formDataDispatch({ field: "id", value: todo.id });
-    formDataDispatch({ field: "title", value: todo.title });
-    formDataDispatch({ field: "day", value: todo.day });
-    formDataDispatch({ field: "month", value: todo.month });
-    formDataDispatch({ field: "year", value: todo.year });
-    formDataDispatch({ field: "description", value: todo.description });
+    setCurTodo(todo);
     openModal();
   };
 
   const handleDelete = () => {
     const confirm = window.confirm("Are you sure?");
-    if (confirm) todos.deleteTodo(todo.id);
+    if (confirm) deleteTodo(todo.id);
   };
 
   const handleToggleComplete = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (e.target === e.currentTarget) {
-      todos.update({ id: todo.id, completed: !todo.completed });
+      updateTodo({ id: todo.id, completed: !todo.completed });
     }
   };
 

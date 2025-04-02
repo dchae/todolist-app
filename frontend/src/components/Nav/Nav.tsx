@@ -1,14 +1,11 @@
 import "./Nav.css";
-import { TodosHook, DateStr, Filter } from "../../types.ts";
+import { Todo, DateStr, Filter } from "../../types.ts";
+import utils from "../../utils.ts";
+import NavItem from "../NavItem";
 
-// TODO: fix nav button
 export const NavButton = () => {
   return <label htmlFor="sidebar-toggle">Menu</label>;
 };
-
-interface NavProps {
-  todos: TodosHook;
-}
 
 const sortGroups = (groups: Array<[DateStr, number]>) => {
   const dateSort = (a: [DateStr, number], b: [DateStr, number]) => {
@@ -24,19 +21,33 @@ const sortGroups = (groups: Array<[DateStr, number]>) => {
   return groups.sort(dateSort);
 };
 
-const Nav = ({ todos }: NavProps) => {
-  const groups = Object.entries(todos.datesTally()) as Array<[DateStr, number]>;
-  const completedGroups = Object.entries(todos.datesTally(true)) as Array<
+const getNavGroups = (todos: Todo[]) => {
+  const groups = Object.entries(utils.datesTally(todos)) as Array<
     [DateStr, number]
   >;
+  const completedGroups = Object.entries(
+    utils.datesTally(todos, true),
+  ) as Array<[DateStr, number]>;
+
   sortGroups(groups);
   sortGroups(completedGroups);
 
-  const getGroupClass = (filter: Filter) => {
+  return [groups, completedGroups];
+};
+
+interface NavProps {
+  todos: Todo[];
+  filter: Filter;
+  setFilter: (filter: Filter) => void;
+}
+
+const Nav = ({ todos, filter, setFilter }: NavProps) => {
+  const [groups, completedGroups] = getNavGroups(todos);
+  const getGroupClass = (curFilter: Filter) => {
     const classList = ["group"];
     if (
-      filter.date === todos.filter.date &&
-      filter.completedOnly === todos.filter.completedOnly
+      curFilter.date === filter.date &&
+      curFilter.completedOnly === filter.completedOnly
     ) {
       classList.push("current");
     }
@@ -51,24 +62,22 @@ const Nav = ({ todos }: NavProps) => {
           <h2
             id="all-group"
             className={getGroupClass({})}
-            onClick={() => todos.setFilter({})}
+            onClick={() => setFilter({})}
           >
             <a href="#">All Todos</a>
-            <span className="badge">{todos.all.length}</span>
+            <span className="badge">{todos.length}</span>
           </h2>
 
           <ul className="all-date-groups">
             {groups.map(([name, count]) => {
-              const filter = { date: name };
               return (
-                <li
+                <NavItem
                   key={name}
-                  className={getGroupClass(filter)}
-                  onClick={() => todos.setFilter(filter)}
-                >
-                  <a href="#">{name}</a>
-                  <span className="badge">{count}</span>
-                </li>
+                  name={name}
+                  count={count}
+                  setFilter={setFilter}
+                  getGroupClass={getGroupClass}
+                />
               );
             })}
           </ul>
@@ -78,23 +87,22 @@ const Nav = ({ todos }: NavProps) => {
           <h2
             id="all-completed-group"
             className={getGroupClass({ completedOnly: true })}
-            onClick={() => todos.setFilter({ completedOnly: true })}
+            onClick={() => setFilter({ completedOnly: true })}
           >
             <a href="#">Completed</a>
-            <span className="badge">{todos.allCompleted().length}</span>
+            <span className="badge">{utils.allCompleted(todos).length}</span>
           </h2>
           <ul className="completed-date-groups">
             {completedGroups.map(([name, count]) => {
-              const filter: Filter = { date: name, completedOnly: true };
               return (
-                <li
+                <NavItem
                   key={name}
-                  className={getGroupClass(filter)}
-                  onClick={() => todos.setFilter(filter)}
-                >
-                  <a href="#">{name}</a>
-                  <span className="badge">{count}</span>
-                </li>
+                  completedOnly={true}
+                  name={name}
+                  count={count}
+                  setFilter={setFilter}
+                  getGroupClass={getGroupClass}
+                />
               );
             })}
           </ul>

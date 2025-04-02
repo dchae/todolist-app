@@ -1,61 +1,83 @@
+import { useState, useEffect, useMemo } from "react";
 import "./FormModal.css";
 import Modal from "../Modal";
-import { FormData, FormDataAction, TodosHook } from "../../types.ts";
+import { Todo, NewTodoData, UpdateTodoData, Filter } from "../../types.ts";
 
 interface FormModalProps {
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
-  formData: FormData;
-  dispatch: (action: FormDataAction) => void;
-  todos: TodosHook;
+  curTodo: Todo | null;
+  setCurTodo: (todo: Todo | null) => void;
+  updateTodo: (values: UpdateTodoData) => void;
+  createTodo: (values: NewTodoData) => void;
+  setFilter: (filter: Filter) => void;
 }
 
 const FormModal = ({
-  todos,
   isOpen,
   setOpen,
-  formData,
-  dispatch,
+  curTodo,
+  setCurTodo,
+  updateTodo,
+  createTodo,
+  setFilter,
 }: FormModalProps) => {
+  const emptyFormData = useMemo<NewTodoData>(
+    () => ({
+      title: "",
+      day: "",
+      month: "",
+      year: "",
+      description: "",
+    }),
+    [],
+  );
+  const [formData, setFormData] = useState<NewTodoData>(emptyFormData);
+
+  useEffect(() => {
+    const data = curTodo ?? emptyFormData;
+    setFormData({ ...data });
+  }, [curTodo, emptyFormData]);
+
+  const handleValueChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if ("id" in formData && typeof formData.id === "number") {
-      todos.update(formData);
+    if (curTodo) {
+      updateTodo(formData);
     } else {
-      todos.create(formData);
-      todos.setFilter({});
+      createTodo(formData);
+      setCurTodo(null);
+      setFilter({});
     }
     setOpen(false);
   };
 
-  const handleValueChange = (e: React.SyntheticEvent) => {
-    if (!("name" in e.target && "value" in e.target)) {
-      throw new Error("Invalid value change target.");
-    }
-
-    const field = e.target.name;
-    const value = e.target.value;
-    // TODO: Used assertion here because narrowing would be unnecessarily annoying.
-    // Consider using something like zod to parse.
-    dispatch({ field, value } as FormDataAction);
-  };
-
   const handleMarkComplete = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if ("id" in formData) {
-      todos.update({ id: formData.id, completed: true });
+    if (curTodo) {
+      updateTodo({ id: curTodo.id, completed: true });
       setOpen(false);
     } else {
       alert("Todo has not been created yet");
     }
   };
 
+  const daysInMonth = () => {
+    const month = Number(formData.month) || 1;
+    const year = Number(formData.year) || new Date().getFullYear();
+    return new Date(year, month, 0).getDate();
+  };
+
   return (
-    <Modal
-      isOpen={isOpen}
-      setOpen={setOpen}
-      onClose={() => dispatch({ reset: true })}
-    >
+    <Modal isOpen={isOpen} setOpen={setOpen}>
       <form onSubmit={handleSubmit}>
         <label id="title-label" htmlFor="title">
           Title
@@ -83,7 +105,7 @@ const FormModal = ({
             onChange={handleValueChange}
           >
             <option value="">Day</option>
-            {[...Array(31).keys()].map((i) => {
+            {[...Array(daysInMonth()).keys()].map((i) => {
               const day = String(i + 1);
               const padded = day.padStart(2, "0");
               return (
